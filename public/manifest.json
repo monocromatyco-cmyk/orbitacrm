@@ -1,0 +1,16 @@
+{
+  "name": "Órbita CRM",
+  "short_name": "Órbita",
+  "description": "CRM para gestión de clientes, cotizaciones y recibos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
