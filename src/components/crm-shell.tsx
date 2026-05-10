@@ -18,7 +18,7 @@ import {
   X,
 } from "@/components/icons";
 
-// ── Type exports used across views ──────────────────────────────────────────
+// ââ Type exports used across views ââââââââââââââââââââââââââââââââââââââââââââ
 export type AppConfig = {
   id: number;
   businessName: string;
@@ -146,7 +146,7 @@ const NAV_ITEMS: { id: View; label: string; Icon: React.FC<{ size?: number; clas
   { id: "servicios", label: "Servicios", Icon: Briefcase },
   { id: "cotizaciones", label: "Cotizaciones", Icon: FileText },
   { id: "recibos", label: "Recibos", Icon: Receipt },
-  { id: "config", label: "Configuración", Icon: Settings },
+  { id: "config", label: "ConfiguraciÃ³n", Icon: Settings },
 ];
 
 type Props = {
@@ -171,7 +171,7 @@ export function CrmShell(props: Props) {
     setSidebarOpen(false);
   }, []);
 
-  const businessName = props.config.businessName || "Órbita CRM";
+  const businessName = props.config.businessName || "Ãrbita CRM";
   const initials = businessName
     .split(" ")
     .slice(0, 2)
@@ -189,7 +189,7 @@ export function CrmShell(props: Props) {
         />
       )}
 
-      {/* ── Sidebar ────────────────────────────────────────────────────────── */}
+      {/* ââ Sidebar ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-[#0f1d36] text-white transition-transform duration-300
@@ -204,40 +204,53 @@ export function CrmShell(props: Props) {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold truncate leading-tight">{businessName}</p>
-            <p className="text-[11px] text-blue-300/70">Órbita CRM</p>
+            <p className="text-[11px] text-blue-300/70">Ãrbita CRM</p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto rounded-lg p-1.5 hover:bg-white/10 lg:hidden"
+            className="ml-auto text-blue-400 hover:text-white lg:hidden"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3">
-          {NAV_ITEMS.map(({ id, label, Icon }) => (
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          {NAV_ITEMS.map((item) => (
             <button
-              key={id}
-              onClick={() => navigate(id)}
+              key={item.id}
+              onClick={() => navigate(item.id)}
               className={`
-                flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors mb-1
-                ${activeView === id
-                  ? "bg-blue-600/20 text-blue-300 font-medium"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"}
+                flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+                ${
+                  activeView === item.id
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                    : "text-blue-200/80 hover:bg-blue-900/40 hover:text-white"
+                }
               `}
             >
-              <Icon size={18} />
-              {label}
+              <item.Icon size={18} />
+              {item.label}
             </button>
           ))}
         </nav>
+
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-blue-900/50">
+          <p className="text-[11px] text-blue-400/60">{props.config.currency} Â· IVA {props.config.defaultTaxRate}%</p>
+        </div>
       </aside>
 
-      {/* ── Main area ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar — BOTÓN DE MENÚ ELIMINADO DE AQUÍ */}
-        <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-slate-200 shadow-sm">
+      {/* ââ Main area ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Top bar */}
+        <header className="flex h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6 shadow-sm">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+          >
+            <Menu size={20} />
+          </button>
           <div className="flex items-center gap-2">
             {NAV_ITEMS.find((n) => n.id === activeView)?.Icon &&
               (() => {
@@ -248,48 +261,55 @@ export function CrmShell(props: Props) {
               {NAV_ITEMS.find((n) => n.id === activeView)?.label}
             </span>
           </div>
-          <span className="ml-auto text-sm text-slate-400">{businessName}</span>
-        </div>
+          <div className="ml-auto flex items-center gap-2 text-xs text-slate-400">
+            <span className="hidden sm:block">{businessName}</span>
+          </div>
+        </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto">
           {activeView === "dashboard" && (
-            <Dashboard stats={props.stats} config={props.config} />
+            <Dashboard
+              stats={props.stats}
+              config={props.config}
+              receiptRows={props.receiptRows}
+              quoteRows={props.quoteRows}
+              onNavigate={navigate}
+            />
           )}
           {activeView === "clientes" && (
-            <ClientsView clients={props.clientRows} config={props.config} />
+            <ClientsView clientRows={props.clientRows} />
           )}
           {activeView === "servicios" && (
-            <ServicesView services={props.serviceRows} config={props.config} />
+            <ServicesView serviceRows={props.serviceRows} config={props.config} />
           )}
           {activeView === "cotizaciones" && (
             <QuotesView
-              quotes={props.quoteRows}
-              clients={props.clientRows}
-              services={props.serviceRows}
+              quoteRows={props.quoteRows}
               quoteItemsByQuote={props.quoteItemsByQuote}
+              clientRows={props.clientRows}
+              serviceRows={props.serviceRows}
               config={props.config}
             />
           )}
           {activeView === "recibos" && (
             <ReceiptsView
-              receipts={props.receiptRows}
-              clients={props.clientRows}
-              services={props.serviceRows}
-              quotes={props.quoteRows}
-              quoteItemsByQuote={props.quoteItemsByQuote}
+              receiptRows={props.receiptRows}
               receiptItemsByReceipt={props.receiptItemsByReceipt}
               paymentsByReceipt={props.paymentsByReceipt}
+              clientRows={props.clientRows}
+              serviceRows={props.serviceRows}
+              quoteRows={props.quoteRows}
               config={props.config}
             />
           )}
           {activeView === "config" && (
             <SettingsView config={props.config} />
           )}
-        </div>
+        </main>
       </div>
 
-      {/* ── NUEVO: FAB (botón flotante) abajo-derecha — solo móvil ──────── */}
+      {/* ── FAB: botón de menú abajo-derecha (solo móvil) ──────────────── */}
       <button
         onClick={() => setSidebarOpen(true)}
         className="fixed bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-700 active:scale-95 transition-all lg:hidden"
@@ -297,8 +317,6 @@ export function CrmShell(props: Props) {
       >
         <Menu size={24} />
       </button>
-
-      {/* ── ELIMINADO: Barra de navegación inferior con 4 botones ────────── */}
     </div>
   );
 }
