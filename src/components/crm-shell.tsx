@@ -18,7 +18,7 @@ import {
   X,
 } from "@/components/icons";
 
-// ── Type exports used across views ────────────────────────────────────────────
+// ── Type exports used across views ──────────────────────────────────────────
 export type AppConfig = {
   id: number;
   businessName: string;
@@ -208,49 +208,36 @@ export function CrmShell(props: Props) {
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto text-blue-400 hover:text-white lg:hidden"
+            className="ml-auto rounded-lg p-1.5 hover:bg-white/10 lg:hidden"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {NAV_ITEMS.map((item) => (
+        <nav className="flex-1 overflow-y-auto py-3 px-3">
+          {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
-              key={item.id}
-              onClick={() => navigate(item.id)}
+              key={id}
+              onClick={() => navigate(id)}
               className={`
-                flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-                ${
-                  activeView === item.id
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                    : "text-blue-200/80 hover:bg-blue-900/40 hover:text-white"
-                }
+                flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors mb-1
+                ${activeView === id
+                  ? "bg-blue-600/20 text-blue-300 font-medium"
+                  : "text-slate-300 hover:bg-white/5 hover:text-white"}
               `}
             >
-              <item.Icon size={18} />
-              {item.label}
+              <Icon size={18} />
+              {label}
             </button>
           ))}
         </nav>
-
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-blue-900/50">
-          <p className="text-[11px] text-blue-400/60">{props.config.currency} · IVA {props.config.defaultTaxRate}%</p>
-        </div>
       </aside>
 
       {/* ── Main area ──────────────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="flex h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6 shadow-sm">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
-          >
-            <Menu size={20} />
-          </button>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar — BOTÓN DE MENÚ ELIMINADO DE AQUÍ */}
+        <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-slate-200 shadow-sm">
           <div className="flex items-center gap-2">
             {NAV_ITEMS.find((n) => n.id === activeView)?.Icon &&
               (() => {
@@ -261,53 +248,57 @@ export function CrmShell(props: Props) {
               {NAV_ITEMS.find((n) => n.id === activeView)?.label}
             </span>
           </div>
-          <div className="ml-auto flex items-center gap-2 text-xs text-slate-400">
-            <span className="hidden sm:block">{businessName}</span>
-          </div>
-        </header>
+          <span className="ml-auto text-sm text-slate-400">{businessName}</span>
+        </div>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
           {activeView === "dashboard" && (
-            <Dashboard
-              stats={props.stats}
-              config={props.config}
-              receiptRows={props.receiptRows}
-              quoteRows={props.quoteRows}
-              onNavigate={navigate}
-            />
+            <Dashboard stats={props.stats} config={props.config} />
           )}
           {activeView === "clientes" && (
-            <ClientsView clientRows={props.clientRows} />
+            <ClientsView clients={props.clientRows} config={props.config} />
           )}
           {activeView === "servicios" && (
-            <ServicesView serviceRows={props.serviceRows} config={props.config} />
+            <ServicesView services={props.serviceRows} config={props.config} />
           )}
           {activeView === "cotizaciones" && (
             <QuotesView
-              quoteRows={props.quoteRows}
+              quotes={props.quoteRows}
+              clients={props.clientRows}
+              services={props.serviceRows}
               quoteItemsByQuote={props.quoteItemsByQuote}
-              clientRows={props.clientRows}
-              serviceRows={props.serviceRows}
               config={props.config}
             />
           )}
           {activeView === "recibos" && (
             <ReceiptsView
-              receiptRows={props.receiptRows}
+              receipts={props.receiptRows}
+              clients={props.clientRows}
+              services={props.serviceRows}
+              quotes={props.quoteRows}
+              quoteItemsByQuote={props.quoteItemsByQuote}
               receiptItemsByReceipt={props.receiptItemsByReceipt}
               paymentsByReceipt={props.paymentsByReceipt}
-              clientRows={props.clientRows}
-              serviceRows={props.serviceRows}
-              quoteRows={props.quoteRows}
               config={props.config}
             />
           )}
           {activeView === "config" && (
             <SettingsView config={props.config} />
           )}
-        </main>
+        </div>
       </div>
+
+      {/* ── NUEVO: FAB (botón flotante) abajo-derecha — solo móvil ──────── */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="fixed bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-700 active:scale-95 transition-all lg:hidden"
+        aria-label="Abrir menú"
+      >
+        <Menu size={24} />
+      </button>
+
+      {/* ── ELIMINADO: Barra de navegación inferior con 4 botones ────────── */}
     </div>
   );
 }
